@@ -35,10 +35,44 @@ pub struct ScrollMetrics {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CursorShape {
+    /// Default terminal cursor (DECSCUSR 0) — let the terminal decide.
+    Default,
+    /// Block cursor (DECSCUSR 2).
+    Block,
+    /// Underline cursor (DECSCUSR 4).
+    Underline,
+    /// Bar cursor (DECSCUSR 6).
+    Bar,
+}
+
+impl CursorShape {
+    /// DECSCUSR parameter value for this shape.
+    pub fn decscusr(self) -> u8 {
+        match self {
+            Self::Default => 0,
+            Self::Block => 2,
+            Self::Underline => 4,
+            Self::Bar => 6,
+        }
+    }
+
+    fn from_ghostty(style: crate::ghostty::CursorVisualStyle) -> Self {
+        match style {
+            crate::ghostty::CursorVisualStyle::Block
+            | crate::ghostty::CursorVisualStyle::BlockHollow => Self::Block,
+            crate::ghostty::CursorVisualStyle::Underline => Self::Underline,
+            crate::ghostty::CursorVisualStyle::Bar => Self::Bar,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TerminalCursorState {
     pub x: u16,
     pub y: u16,
     pub visible: bool,
+    pub shape: CursorShape,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -530,10 +564,16 @@ impl GhosttyPaneTerminal {
         } = &mut *core;
         render_state.update(terminal).ok()?;
         let cursor = render_state.cursor_viewport().ok()??;
+        let shape = render_state
+            .cursor_visual_style()
+            .ok()
+            .map(CursorShape::from_ghostty)
+            .unwrap_or(CursorShape::Default);
         Some(TerminalCursorState {
             x: cursor.x,
             y: cursor.y,
             visible: render_state.cursor_visible().ok()?,
+            shape,
         })
     }
 
