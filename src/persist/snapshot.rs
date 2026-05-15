@@ -10,7 +10,7 @@ use crate::workspace::Workspace;
 /// Current snapshot format version.
 pub(super) const SNAPSHOT_VERSION: u32 = 3;
 
-/// Serializable snapshot of the entire herdr session.
+/// Serializable snapshot of the entire ups session.
 #[derive(Serialize, Deserialize)]
 pub struct SessionSnapshot {
     /// Format version — used to detect incompatible changes.
@@ -294,11 +294,11 @@ mod tests {
 
     fn session_fixture(name: &str) -> &'static str {
         match name {
-            "current-herdr" => {
-                include_str!("../../tests/fixtures/session/current-herdr-session.json")
+            "current-ups" => {
+                include_str!("../../tests/fixtures/session/current-ups-session.json")
             }
-            "current-herdr-dev" => {
-                include_str!("../../tests/fixtures/session/current-herdr-dev-session.json")
+            "current-ups-dev" => {
+                include_str!("../../tests/fixtures/session/current-ups-dev-session.json")
             }
             "legacy-pre-tabs-v2" => {
                 include_str!("../../tests/fixtures/session/legacy-pre-tabs-v2.json")
@@ -383,7 +383,7 @@ mod tests {
         panes.insert(
             0,
             PaneSnapshot {
-                cwd: PathBuf::from("/home/can/Projects/herdr"),
+                cwd: PathBuf::from("/home/can/Projects/ups"),
                 label: None,
             },
         );
@@ -399,7 +399,7 @@ mod tests {
             workspaces: vec![WorkspaceSnapshot {
                 id: Some("wproj".to_string()),
                 custom_name: Some("pi-mono".to_string()),
-                identity_cwd: PathBuf::from("/home/can/Projects/herdr"),
+                identity_cwd: PathBuf::from("/home/can/Projects/ups"),
                 tabs: vec![TabSnapshot {
                     custom_name: Some("api".to_string()),
                     layout: LayoutSnapshot::Split {
@@ -436,7 +436,7 @@ mod tests {
         assert_eq!(restored.workspaces[0].tabs[0].panes.len(), 2);
         assert_eq!(
             restored.workspaces[0].tabs[0].panes[&0].cwd,
-            PathBuf::from("/home/can/Projects/herdr")
+            PathBuf::from("/home/can/Projects/ups")
         );
         assert_eq!(
             restored.workspaces[0].tabs[0].panes[&1].label.as_deref(),
@@ -452,7 +452,7 @@ mod tests {
 
     #[test]
     fn current_session_fixture_parses() {
-        let snap = parse_snapshot(session_fixture("current-herdr")).unwrap();
+        let snap = parse_snapshot(session_fixture("current-ups")).unwrap();
 
         assert_eq!(snap.version, 3);
         assert_eq!(snap.workspaces.len(), 2);
@@ -470,7 +470,7 @@ mod tests {
 
     #[test]
     fn current_dev_session_fixture_parses_additive_fields() {
-        let snap = parse_snapshot(session_fixture("current-herdr-dev")).unwrap();
+        let snap = parse_snapshot(session_fixture("current-ups-dev")).unwrap();
 
         assert_eq!(snap.version, 3);
         assert_eq!(snap.workspaces.len(), 2);
@@ -511,7 +511,7 @@ mod tests {
         assert_eq!(ws.tabs[0].focused, Some(1));
         assert_eq!(ws.tabs[0].root_pane, Some(0));
         assert_eq!(ws.tabs[0].panes[&0].cwd, PathBuf::from("/tmp/pion"));
-        assert_eq!(ws.tabs[0].panes[&1].cwd, PathBuf::from("/tmp/herdr"));
+        assert_eq!(ws.tabs[0].panes[&1].cwd, PathBuf::from("/tmp/ups"));
     }
 
     #[test]
@@ -663,14 +663,14 @@ mod tests {
         let second = state.workspaces[0].test_split(Direction::Horizontal);
         state.workspaces[0].tabs[0]
             .pane_cwds
-            .insert(second, PathBuf::from("/tmp/herdr"));
+            .insert(second, PathBuf::from("/tmp/ups"));
 
         let snapshot = capture_from_state(&state);
         let workspace = &snapshot.workspaces[0];
         let tab = &workspace.tabs[0];
         assert_eq!(workspace.identity_cwd, PathBuf::from("/tmp/pion"));
         assert_eq!(tab.panes[&root.raw()].cwd, PathBuf::from("/tmp/pion"));
-        assert_eq!(tab.panes[&second.raw()].cwd, PathBuf::from("/tmp/herdr"));
+        assert_eq!(tab.panes[&second.raw()].cwd, PathBuf::from("/tmp/ups"));
     }
 
     #[test]
@@ -699,7 +699,7 @@ mod tests {
         panes.insert(
             0,
             PaneSnapshot {
-                cwd: PathBuf::from("/tmp/this-directory-does-not-exist-for-herdr-test"),
+                cwd: PathBuf::from("/tmp/this-directory-does-not-exist-for-ups-test"),
                 label: None,
             },
         );
@@ -746,7 +746,7 @@ mod tests {
         assert_eq!(restored.workspaces.len(), 1);
         assert_eq!(
             restored.workspaces[0].tabs[0].panes[&0].cwd,
-            PathBuf::from("/tmp/this-directory-does-not-exist-for-herdr-test")
+            PathBuf::from("/tmp/this-directory-does-not-exist-for-ups-test")
         );
     }
 }

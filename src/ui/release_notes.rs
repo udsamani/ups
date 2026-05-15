@@ -296,7 +296,7 @@ pub(super) fn release_notes_preview_lines<'a>(_version: &str, p: &Palette) -> Ve
         ]),
         Line::from(vec![
             Span::styled("detach from this session, then run ", text_style),
-            Span::styled("herdr update", code_style),
+            Span::styled("ups update", code_style),
             Span::styled(" in your shell", text_style),
         ]),
     ]

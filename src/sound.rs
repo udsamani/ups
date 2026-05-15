@@ -66,7 +66,7 @@ fn play_file(path: &Path) -> Result<(), String> {
 
 fn play_bytes(data: &[u8]) -> Result<(), String> {
     // Write to a temp file (audio players need a file path)
-    let tmp = std::env::temp_dir().join(format!("herdr-sound-{}.mp3", std::process::id()));
+    let tmp = std::env::temp_dir().join(format!("ups-sound-{}.mp3", std::process::id()));
     let mut file = std::fs::File::create(&tmp).map_err(|e| e.to_string())?;
     file.write_all(data).map_err(|e| e.to_string())?;
     drop(file);

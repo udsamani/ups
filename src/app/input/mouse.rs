@@ -1345,7 +1345,7 @@ mod tests {
         app.state.workspaces = vec![active, background];
         app.state.active = Some(0);
         app.state.selected = 0;
-        app.state.toast_config.delivery = crate::config::ToastDelivery::Herdr;
+        app.state.toast_config.delivery = crate::config::ToastDelivery::Ups;
         app.state.workspaces[1]
             .panes
             .get_mut(&target_pane)

@@ -1,8 +1,8 @@
 #!/bin/sh
-# installed by herdr
-# safe to edit. this hook only activates inside herdr-managed panes.
-# HERDR_INTEGRATION_ID=codex
-# HERDR_INTEGRATION_VERSION=2
+# installed by ups
+# safe to edit. this hook only activates inside ups-managed panes.
+# UPS_INTEGRATION_ID=codex
+# UPS_INTEGRATION_VERSION=2
 
 set -eu
 
@@ -14,22 +14,22 @@ case "$action" in
   *) exit 0 ;;
 esac
 
-[ "${HERDR_ENV:-}" = "1" ] || exit 0
-[ -n "${HERDR_SOCKET_PATH:-}" ] || exit 0
-[ -n "${HERDR_PANE_ID:-}" ] || exit 0
+[ "${UPS_ENV:-}" = "1" ] || exit 0
+[ -n "${UPS_SOCKET_PATH:-}" ] || exit 0
+[ -n "${UPS_PANE_ID:-}" ] || exit 0
 command -v python3 >/dev/null 2>&1 || exit 0
 
-HERDR_ACTION="$action" python3 - <<'PY'
+UPS_ACTION="$action" python3 - <<'PY'
 import json
 import os
 import random
 import socket
 import time
 
-source = "herdr:codex"
-action = os.environ.get("HERDR_ACTION", "")
-pane_id = os.environ.get("HERDR_PANE_ID")
-socket_path = os.environ.get("HERDR_SOCKET_PATH")
+source = "ups:codex"
+action = os.environ.get("UPS_ACTION", "")
+pane_id = os.environ.get("UPS_PANE_ID")
+socket_path = os.environ.get("UPS_SOCKET_PATH")
 
 if not pane_id or not socket_path:
     raise SystemExit(0)

@@ -1,7 +1,7 @@
 //! Thin client mode — connects to the server's client socket.
 //!
 //! The client:
-//! - Connects to `herdr-client.sock`, sends Hello with terminal size and protocol version
+//! - Connects to `ups-client.sock`, sends Hello with terminal size and protocol version
 //! - Sets up the real terminal (raw mode, mouse capture, keyboard enhancements)
 //! - Receives Frame messages and blits them to the terminal (diff against last frame)
 //! - Reads stdin events (keystrokes, mouse, paste) and sends them as ClientMessage::Input
@@ -83,7 +83,7 @@ impl std::fmt::Display for ClientError {
                 let path = client_socket_path();
                 write!(
                     f,
-                    "\nIs herdr server running? Start it with `herdr server`."
+                    "\nIs ups server running? Start it with `ups server`."
                 )?;
                 write!(f, "\nSocket path: {}", path.display())
             }
@@ -100,7 +100,7 @@ impl std::fmt::Display for ClientError {
                             write!(f, "\nRun `{reattach_command}` to reattach")?;
                         } else {
                             write!(f, "detached from server")?;
-                            write!(f, "\nRun `herdr` to reattach")?;
+                            write!(f, "\nRun `ups` to reattach")?;
                         }
                     }
                     _ => {
@@ -321,7 +321,7 @@ pub fn run_client() -> io::Result<()> {
         Err(err) => {
             // Server unreachable — show clear error and exit.
             let client_err = ClientError::ConnectionFailed(err);
-            eprintln!("herdr: {client_err}");
+            eprintln!("ups: {client_err}");
             std::process::exit(1);
         }
     };
@@ -343,7 +343,7 @@ pub fn run_client() -> io::Result<()> {
     ) {
         Ok(encoding) => encoding,
         Err(err) => {
-            eprintln!("herdr: {err}");
+            eprintln!("ups: {err}");
             std::process::exit(1);
         }
     };
@@ -352,7 +352,7 @@ pub fn run_client() -> io::Result<()> {
     // This must happen AFTER the handshake succeeds, so we don't leave
     // the terminal in raw mode if the server rejects us.
     let _guard = setup_terminal(false).map_err(|err| {
-        eprintln!("herdr: failed to set up terminal: {err}");
+        eprintln!("ups: failed to set up terminal: {err}");
         err
     })?;
 
@@ -396,7 +396,7 @@ pub fn run_client() -> io::Result<()> {
     drop(_guard);
 
     if let Err(err) = result {
-        eprintln!("herdr: {err}");
+        eprintln!("ups: {err}");
         rt.shutdown_timeout(Duration::from_millis(100));
         crate::logging::shutdown("client");
 
@@ -914,7 +914,7 @@ fn write_host_terminal_theme_query(mut writer: impl io::Write) -> io::Result<()>
 }
 
 fn init_logging() {
-    crate::logging::init_file_logging("herdr-client.log");
+    crate::logging::init_file_logging("ups-client.log");
 }
 
 // ---------------------------------------------------------------------------
@@ -956,7 +956,7 @@ mod tests {
     }
 
     #[test]
-    fn kitty_graphics_image_id_parser_tracks_herdr_ids_only() {
+    fn kitty_graphics_image_id_parser_tracks_ups_ids_only() {
         let ids = kitty_graphics_image_ids(
             b"text\x1b_Ga=t,t=d,f=32,s=1,v=1,i=10023,q=2;AAAA\x1b\\\x1b_Ga=p,i=10023,p=7;\x1b\\",
         );
@@ -1002,7 +1002,7 @@ mod tests {
             "should mention connection failure: {msg}"
         );
         assert!(
-            msg.contains("herdr server"),
+            msg.contains("ups server"),
             "should suggest starting server: {msg}"
         );
     }

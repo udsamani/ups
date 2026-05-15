@@ -67,14 +67,14 @@ fn run_status_command(args: &[String]) -> std::io::Result<i32> {
         None => print_full_status(),
         Some("server") => {
             if args.len() > 1 {
-                eprintln!("usage: herdr status server");
+                eprintln!("usage: ups status server");
                 return Ok(2);
             }
             print_server_status()
         }
         Some("client") => {
             if args.len() > 1 {
-                eprintln!("usage: herdr status client");
+                eprintln!("usage: ups status client");
                 return Ok(2);
             }
             print_client_status();
@@ -356,7 +356,7 @@ fn run_session_command(args: &[String]) -> std::io::Result<i32> {
 
 fn server_stop(args: &[String]) -> std::io::Result<i32> {
     if !args.is_empty() {
-        eprintln!("usage: herdr server stop");
+        eprintln!("usage: ups server stop");
         return Ok(2);
     }
 
@@ -365,7 +365,7 @@ fn server_stop(args: &[String]) -> std::io::Result<i32> {
 
 fn server_reload_config(args: &[String]) -> std::io::Result<i32> {
     if !args.is_empty() {
-        eprintln!("usage: herdr server reload-config");
+        eprintln!("usage: ups server reload-config");
         return Ok(2);
     }
 
@@ -380,15 +380,15 @@ fn session_attach_help(args: &[String]) -> std::io::Result<i32> {
         args.first().map(String::as_str),
         Some("help" | "--help" | "-h")
     ) {
-        eprintln!("usage: herdr session attach <name>");
+        eprintln!("usage: ups session attach <name>");
         return Ok(0);
     }
-    eprintln!("usage: herdr session attach <name>");
+    eprintln!("usage: ups session attach <name>");
     Ok(2)
 }
 
 fn session_list(args: &[String]) -> std::io::Result<i32> {
-    let json = match parse_session_json_only(args, "usage: herdr session list [--json]") {
+    let json = match parse_session_json_only(args, "usage: ups session list [--json]") {
         Ok(json) => json,
         Err(code) => return Ok(code),
     };
@@ -406,7 +406,7 @@ fn session_list(args: &[String]) -> std::io::Result<i32> {
 
 fn session_stop(args: &[String]) -> std::io::Result<i32> {
     let (name, json) =
-        match parse_session_name_and_json(args, "usage: herdr session stop <name> [--json]") {
+        match parse_session_name_and_json(args, "usage: ups session stop <name> [--json]") {
             Ok(parsed) => parsed,
             Err(code) => return Ok(code),
         };
@@ -439,7 +439,7 @@ fn session_stop(args: &[String]) -> std::io::Result<i32> {
 
 fn session_delete(args: &[String]) -> std::io::Result<i32> {
     let (name, json) =
-        match parse_session_name_and_json(args, "usage: herdr session delete <name> [--json]") {
+        match parse_session_name_and_json(args, "usage: ups session delete <name> [--json]") {
             Ok(parsed) => parsed,
             Err(code) => return Ok(code),
         };
@@ -465,7 +465,7 @@ fn session_delete(args: &[String]) -> std::io::Result<i32> {
 
 fn workspace_list(args: &[String]) -> std::io::Result<i32> {
     if !args.is_empty() {
-        eprintln!("usage: herdr workspace list");
+        eprintln!("usage: ups workspace list");
         return Ok(2);
     }
 
@@ -522,11 +522,11 @@ fn workspace_create(args: &[String]) -> std::io::Result<i32> {
 
 fn workspace_get(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_workspace_id) = args.first() else {
-        eprintln!("usage: herdr workspace get <workspace_id>");
+        eprintln!("usage: ups workspace get <workspace_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr workspace get <workspace_id>");
+        eprintln!("usage: ups workspace get <workspace_id>");
         return Ok(2);
     }
 
@@ -540,11 +540,11 @@ fn workspace_get(args: &[String]) -> std::io::Result<i32> {
 
 fn workspace_focus(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_workspace_id) = args.first() else {
-        eprintln!("usage: herdr workspace focus <workspace_id>");
+        eprintln!("usage: ups workspace focus <workspace_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr workspace focus <workspace_id>");
+        eprintln!("usage: ups workspace focus <workspace_id>");
         return Ok(2);
     }
 
@@ -558,7 +558,7 @@ fn workspace_focus(args: &[String]) -> std::io::Result<i32> {
 
 fn workspace_rename(args: &[String]) -> std::io::Result<i32> {
     if args.len() < 2 {
-        eprintln!("usage: herdr workspace rename <workspace_id> <label>");
+        eprintln!("usage: ups workspace rename <workspace_id> <label>");
         return Ok(2);
     }
 
@@ -573,11 +573,11 @@ fn workspace_rename(args: &[String]) -> std::io::Result<i32> {
 
 fn workspace_close(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_workspace_id) = args.first() else {
-        eprintln!("usage: herdr workspace close <workspace_id>");
+        eprintln!("usage: ups workspace close <workspace_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr workspace close <workspace_id>");
+        eprintln!("usage: ups workspace close <workspace_id>");
         return Ok(2);
     }
 
@@ -677,11 +677,11 @@ fn tab_create(args: &[String]) -> std::io::Result<i32> {
 
 fn tab_get(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_tab_id) = args.first() else {
-        eprintln!("usage: herdr tab get <tab_id>");
+        eprintln!("usage: ups tab get <tab_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr tab get <tab_id>");
+        eprintln!("usage: ups tab get <tab_id>");
         return Ok(2);
     }
 
@@ -695,11 +695,11 @@ fn tab_get(args: &[String]) -> std::io::Result<i32> {
 
 fn tab_focus(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_tab_id) = args.first() else {
-        eprintln!("usage: herdr tab focus <tab_id>");
+        eprintln!("usage: ups tab focus <tab_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr tab focus <tab_id>");
+        eprintln!("usage: ups tab focus <tab_id>");
         return Ok(2);
     }
 
@@ -713,7 +713,7 @@ fn tab_focus(args: &[String]) -> std::io::Result<i32> {
 
 fn tab_rename(args: &[String]) -> std::io::Result<i32> {
     if args.len() < 2 {
-        eprintln!("usage: herdr tab rename <tab_id> <label>");
+        eprintln!("usage: ups tab rename <tab_id> <label>");
         return Ok(2);
     }
 
@@ -728,11 +728,11 @@ fn tab_rename(args: &[String]) -> std::io::Result<i32> {
 
 fn tab_close(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_tab_id) = args.first() else {
-        eprintln!("usage: herdr tab close <tab_id>");
+        eprintln!("usage: ups tab close <tab_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr tab close <tab_id>");
+        eprintln!("usage: ups tab close <tab_id>");
         return Ok(2);
     }
 
@@ -773,11 +773,11 @@ fn pane_list(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_get(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr pane get <pane_id>");
+        eprintln!("usage: ups pane get <pane_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr pane get <pane_id>");
+        eprintln!("usage: ups pane get <pane_id>");
         return Ok(2);
     }
 
@@ -791,11 +791,11 @@ fn pane_get(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_rename(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr pane rename <pane_id> <label>|--clear");
+        eprintln!("usage: ups pane rename <pane_id> <label>|--clear");
         return Ok(2);
     };
     if args.len() < 2 {
-        eprintln!("usage: herdr pane rename <pane_id> <label>|--clear");
+        eprintln!("usage: ups pane rename <pane_id> <label>|--clear");
         return Ok(2);
     }
     let label = if args.len() == 2 && args[1] == "--clear" {
@@ -815,7 +815,7 @@ fn pane_rename(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_read(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr pane read <pane_id> [--source visible|recent|recent-unwrapped] [--lines N] [--format text|ansi] [--ansi]");
+        eprintln!("usage: ups pane read <pane_id> [--source visible|recent|recent-unwrapped] [--lines N] [--format text|ansi] [--ansi]");
         return Ok(2);
     };
 
@@ -893,7 +893,7 @@ fn pane_read(args: &[String]) -> std::io::Result<i32> {
 fn pane_split(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
         eprintln!(
-            "usage: herdr pane split <pane_id> --direction right|down [--cwd PATH] [--focus] [--no-focus]"
+            "usage: ups pane split <pane_id> --direction right|down [--cwd PATH] [--focus] [--no-focus]"
         );
         return Ok(2);
     };
@@ -956,11 +956,11 @@ fn pane_split(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_close(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr pane close <pane_id>");
+        eprintln!("usage: ups pane close <pane_id>");
         return Ok(2);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr pane close <pane_id>");
+        eprintln!("usage: ups pane close <pane_id>");
         return Ok(2);
     }
 
@@ -974,7 +974,7 @@ fn pane_close(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_send_text(args: &[String]) -> std::io::Result<i32> {
     if args.len() < 2 {
-        eprintln!("usage: herdr pane send-text <pane_id> <text>");
+        eprintln!("usage: ups pane send-text <pane_id> <text>");
         return Ok(2);
     }
 
@@ -985,7 +985,7 @@ fn pane_send_text(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_send_keys(args: &[String]) -> std::io::Result<i32> {
     if args.len() < 2 {
-        eprintln!("usage: herdr pane send-keys <pane_id> <key> [key ...]");
+        eprintln!("usage: ups pane send-keys <pane_id> <key> [key ...]");
         return Ok(2);
     }
 
@@ -996,7 +996,7 @@ fn pane_send_keys(args: &[String]) -> std::io::Result<i32> {
 
 fn pane_run(args: &[String]) -> std::io::Result<i32> {
     if args.len() < 2 {
-        eprintln!("usage: herdr pane run <pane_id> <command>");
+        eprintln!("usage: ups pane run <pane_id> <command>");
         return Ok(2);
     }
 
@@ -1014,7 +1014,7 @@ fn integration_status(args: &[String]) -> std::io::Result<i32> {
         [] => false,
         [flag] if flag == "--outdated-only" => true,
         _ => {
-            eprintln!("usage: herdr integration status [--outdated-only]");
+            eprintln!("usage: ups integration status [--outdated-only]");
             return Ok(2);
         }
     };
@@ -1090,11 +1090,11 @@ fn parse_integration_target(
     action: &str,
 ) -> std::io::Result<Option<IntegrationTarget>> {
     let Some(target) = args.first().map(|arg| arg.as_str()) else {
-        eprintln!("usage: herdr integration {action} <pi|claude|codex|opencode>");
+        eprintln!("usage: ups integration {action} <pi|claude|codex|opencode>");
         return Ok(None);
     };
     if args.len() != 1 {
-        eprintln!("usage: herdr integration {action} <pi|claude|codex|opencode>");
+        eprintln!("usage: ups integration {action} <pi|claude|codex|opencode>");
         return Ok(None);
     }
 
@@ -1115,7 +1115,7 @@ fn parse_integration_target(
 
 fn wait_output(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr wait output <pane_id> --match <text> [--source visible|recent|recent-unwrapped] [--lines N] [--timeout MS] [--regex]");
+        eprintln!("usage: ups wait output <pane_id> --match <text> [--source visible|recent|recent-unwrapped] [--lines N] [--timeout MS] [--regex]");
         return Ok(2);
     };
 
@@ -1211,7 +1211,7 @@ fn wait_output(args: &[String]) -> std::io::Result<i32> {
 
 fn wait_agent_status(args: &[String]) -> std::io::Result<i32> {
     let Some(raw_pane_id) = args.first() else {
-        eprintln!("usage: herdr wait agent-status <pane_id> --status <idle|working|blocked|done|unknown> [--timeout MS]");
+        eprintln!("usage: ups wait agent-status <pane_id> --status <idle|working|blocked|done|unknown> [--timeout MS]");
         return Ok(2);
     };
 
@@ -1483,83 +1483,83 @@ fn print_session_error(code: &str, message: &str) {
 }
 
 fn print_server_help() {
-    eprintln!("herdr server commands:");
-    eprintln!("  herdr server                run as headless server");
-    eprintln!("  herdr server stop           stop the running server via the API socket");
-    eprintln!("  herdr server reload-config  reload config.toml in the running server");
+    eprintln!("ups server commands:");
+    eprintln!("  ups server                run as headless server");
+    eprintln!("  ups server stop           stop the running server via the API socket");
+    eprintln!("  ups server reload-config  reload config.toml in the running server");
 }
 
 fn print_status_help() {
-    eprintln!("herdr status commands:");
-    eprintln!("  herdr status         show local client and running server status");
-    eprintln!("  herdr status server  show running server status");
-    eprintln!("  herdr status client  show local client binary status");
+    eprintln!("ups status commands:");
+    eprintln!("  ups status         show local client and running server status");
+    eprintln!("  ups status server  show running server status");
+    eprintln!("  ups status client  show local client binary status");
 }
 
 fn print_workspace_help() {
-    eprintln!("herdr workspace commands:");
-    eprintln!("  herdr workspace list");
-    eprintln!("  herdr workspace create [--cwd PATH] [--label TEXT] [--focus] [--no-focus]");
-    eprintln!("  herdr workspace get <workspace_id>");
-    eprintln!("  herdr workspace focus <workspace_id>");
-    eprintln!("  herdr workspace rename <workspace_id> <label>");
-    eprintln!("  herdr workspace close <workspace_id>");
+    eprintln!("ups workspace commands:");
+    eprintln!("  ups workspace list");
+    eprintln!("  ups workspace create [--cwd PATH] [--label TEXT] [--focus] [--no-focus]");
+    eprintln!("  ups workspace get <workspace_id>");
+    eprintln!("  ups workspace focus <workspace_id>");
+    eprintln!("  ups workspace rename <workspace_id> <label>");
+    eprintln!("  ups workspace close <workspace_id>");
 }
 
 fn print_tab_help() {
-    eprintln!("herdr tab commands:");
-    eprintln!("  herdr tab list [--workspace <workspace_id>]");
+    eprintln!("ups tab commands:");
+    eprintln!("  ups tab list [--workspace <workspace_id>]");
     eprintln!(
-        "  herdr tab create [--workspace <workspace_id>] [--cwd PATH] [--label TEXT] [--focus] [--no-focus]"
+        "  ups tab create [--workspace <workspace_id>] [--cwd PATH] [--label TEXT] [--focus] [--no-focus]"
     );
-    eprintln!("  herdr tab get <tab_id>");
-    eprintln!("  herdr tab focus <tab_id>");
-    eprintln!("  herdr tab rename <tab_id> <label>");
-    eprintln!("  herdr tab close <tab_id>");
+    eprintln!("  ups tab get <tab_id>");
+    eprintln!("  ups tab focus <tab_id>");
+    eprintln!("  ups tab rename <tab_id> <label>");
+    eprintln!("  ups tab close <tab_id>");
 }
 
 fn print_pane_help() {
-    eprintln!("herdr pane commands:");
-    eprintln!("  herdr pane list [--workspace <workspace_id>]");
-    eprintln!("  herdr pane get <pane_id>");
-    eprintln!("  herdr pane rename <pane_id> <label>|--clear");
-    eprintln!("  herdr pane read <pane_id> [--source visible|recent|recent-unwrapped] [--lines N] [--format text|ansi] [--ansi]");
+    eprintln!("ups pane commands:");
+    eprintln!("  ups pane list [--workspace <workspace_id>]");
+    eprintln!("  ups pane get <pane_id>");
+    eprintln!("  ups pane rename <pane_id> <label>|--clear");
+    eprintln!("  ups pane read <pane_id> [--source visible|recent|recent-unwrapped] [--lines N] [--format text|ansi] [--ansi]");
     eprintln!(
-        "  herdr pane split <pane_id> --direction right|down [--cwd PATH] [--focus] [--no-focus]"
+        "  ups pane split <pane_id> --direction right|down [--cwd PATH] [--focus] [--no-focus]"
     );
-    eprintln!("  herdr pane close <pane_id>");
-    eprintln!("  herdr pane send-text <pane_id> <text>");
-    eprintln!("  herdr pane send-keys <pane_id> <key> [key ...]");
-    eprintln!("  herdr pane run <pane_id> <command>");
+    eprintln!("  ups pane close <pane_id>");
+    eprintln!("  ups pane send-text <pane_id> <text>");
+    eprintln!("  ups pane send-keys <pane_id> <key> [key ...]");
+    eprintln!("  ups pane run <pane_id> <command>");
 }
 
 fn print_wait_help() {
-    eprintln!("herdr wait commands:");
-    eprintln!("  herdr wait output <pane_id> --match <text> [--source visible|recent|recent-unwrapped] [--lines N] [--timeout MS] [--regex] [--raw]");
+    eprintln!("ups wait commands:");
+    eprintln!("  ups wait output <pane_id> --match <text> [--source visible|recent|recent-unwrapped] [--lines N] [--timeout MS] [--regex] [--raw]");
     eprintln!(
-        "  herdr wait agent-status <pane_id> --status <idle|working|blocked|done|unknown> [--timeout MS]"
+        "  ups wait agent-status <pane_id> --status <idle|working|blocked|done|unknown> [--timeout MS]"
     );
 }
 
 fn print_integration_help() {
-    eprintln!("herdr integration commands:");
-    eprintln!("  herdr integration install pi");
-    eprintln!("  herdr integration install claude");
-    eprintln!("  herdr integration install codex");
-    eprintln!("  herdr integration install opencode");
-    eprintln!("  herdr integration uninstall pi");
-    eprintln!("  herdr integration uninstall claude");
-    eprintln!("  herdr integration uninstall codex");
-    eprintln!("  herdr integration uninstall opencode");
-    eprintln!("  herdr integration status [--outdated-only]");
+    eprintln!("ups integration commands:");
+    eprintln!("  ups integration install pi");
+    eprintln!("  ups integration install claude");
+    eprintln!("  ups integration install codex");
+    eprintln!("  ups integration install opencode");
+    eprintln!("  ups integration uninstall pi");
+    eprintln!("  ups integration uninstall claude");
+    eprintln!("  ups integration uninstall codex");
+    eprintln!("  ups integration uninstall opencode");
+    eprintln!("  ups integration status [--outdated-only]");
 }
 
 fn print_session_help() {
-    eprintln!("herdr session commands:");
-    eprintln!("  herdr session list [--json]");
-    eprintln!("  herdr session attach <name>");
-    eprintln!("  herdr session stop <name> [--json]");
-    eprintln!("  herdr session delete <name> [--json]");
+    eprintln!("ups session commands:");
+    eprintln!("  ups session list [--json]");
+    eprintln!("  ups session attach <name>");
+    eprintln!("  ups session stop <name> [--json]");
+    eprintln!("  ups session delete <name> [--json]");
     eprintln!("  use 'default' as <name> to target the default session for stop");
 }
 

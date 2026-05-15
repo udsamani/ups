@@ -794,7 +794,7 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .expect("unix time")
             .as_nanos();
-        let root = std::env::temp_dir().join(format!("herdr-ui-test-{unique}"));
+        let root = std::env::temp_dir().join(format!("ups-ui-test-{unique}"));
         std::fs::create_dir_all(root.join(".git")).expect("create .git dir");
         std::fs::write(
             root.join(".git/HEAD"),
@@ -807,11 +807,11 @@ mod tests {
     #[test]
     fn release_notes_inline_code_spans_are_styled_without_backticks() {
         let palette = Palette::catppuccin();
-        let lines = release_notes_lines("- `herdr pane run ...` now works", &palette);
+        let lines = release_notes_lines("- `ups pane run ...` now works", &palette);
 
         assert_eq!(lines.len(), 1);
-        assert_eq!(line_text(&lines[0].1), " • herdr pane run ... now works");
-        assert_eq!(lines[0].1.spans[1].content.as_ref(), "herdr pane run ...");
+        assert_eq!(line_text(&lines[0].1), " • ups pane run ... now works");
+        assert_eq!(lines[0].1.spans[1].content.as_ref(), "ups pane run ...");
         assert_eq!(lines[0].1.spans[1].style.fg, Some(palette.accent));
         assert_eq!(lines[0].1.spans[1].style.bg, Some(palette.surface0));
     }
@@ -825,7 +825,7 @@ mod tests {
         assert_eq!(line_text(&lines[0]), "● update ready");
         assert_eq!(
             line_text(&lines[1]),
-            "detach from this session, then run herdr update in your shell"
+            "detach from this session, then run ups update in your shell"
         );
         assert_eq!(lines[0].spans[0].style.fg, Some(palette.accent));
         assert_eq!(lines[0].spans[1].style.fg, Some(palette.text));

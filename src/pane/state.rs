@@ -326,7 +326,7 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::Pi), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
@@ -344,7 +344,7 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::Pi), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:custom".into(),
+            "ups:custom".into(),
             "hermes".into(),
             AgentState::Working,
             None,
@@ -382,7 +382,7 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::Pi), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:custom".into(),
+            "ups:custom".into(),
             "hermes".into(),
             AgentState::Working,
             None,
@@ -402,7 +402,7 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::OpenCode), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:opencode".into(),
+            "ups:opencode".into(),
             "opencode".into(),
             AgentState::Idle,
             None,
@@ -423,7 +423,7 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::Codex), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:codex".into(),
+            "ups:codex".into(),
             "codex".into(),
             AgentState::Idle,
             None,
@@ -443,14 +443,14 @@ mod tests {
         let mut pane = PaneState::new();
         pane.set_detected_state(Some(Agent::Pi), AgentState::Idle);
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
             None,
         );
 
-        pane.release_agent("herdr:pi", "pi", None);
+        pane.release_agent("ups:pi", "pi", None);
 
         assert!(pane.hook_authority.is_none());
         assert_eq!(pane.detected_agent, None);
@@ -462,7 +462,7 @@ mod tests {
     fn stale_hook_report_sequence_is_ignored_for_same_source() {
         let mut pane = PaneState::new();
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
@@ -470,7 +470,7 @@ mod tests {
         );
 
         let change = pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Idle,
             None,
@@ -489,7 +489,7 @@ mod tests {
     fn unsequenced_hook_report_is_ignored_after_source_uses_sequence() {
         let mut pane = PaneState::new();
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
@@ -497,7 +497,7 @@ mod tests {
         );
 
         let change =
-            pane.set_hook_authority("herdr:pi".into(), "pi".into(), AgentState::Idle, None, None);
+            pane.set_hook_authority("ups:pi".into(), "pi".into(), AgentState::Idle, None, None);
 
         assert!(change.is_none());
         assert_eq!(pane.state, AgentState::Working);
@@ -507,14 +507,14 @@ mod tests {
     fn stale_release_sequence_is_ignored_for_same_source() {
         let mut pane = PaneState::new();
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
             Some(20),
         );
 
-        let change = pane.release_agent("herdr:pi", "pi", Some(19));
+        let change = pane.release_agent("ups:pi", "pi", Some(19));
 
         assert!(change.is_none());
         assert_eq!(pane.state, AgentState::Working);
@@ -525,7 +525,7 @@ mod tests {
     fn stale_clear_all_sequence_is_checked_against_current_authority_source() {
         let mut pane = PaneState::new();
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,
@@ -543,7 +543,7 @@ mod tests {
     fn same_sequence_from_different_sources_is_independent() {
         let mut pane = PaneState::new();
         pane.set_hook_authority(
-            "herdr:pi".into(),
+            "ups:pi".into(),
             "pi".into(),
             AgentState::Working,
             None,

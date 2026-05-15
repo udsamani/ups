@@ -44,7 +44,7 @@ pub enum AppEvent {
     /// A new version is available and ready to install explicitly.
     UpdateReady { version: String },
     /// A pane child emitted a valid OSC 52 clipboard write. The main loop
-    /// re-emits it through herdr's own clipboard writer.
+    /// re-emits it through ups's own clipboard writer.
     ClipboardWrite { content: Vec<u8> },
     /// Background git status refresh completed for workspaces.
     GitStatusRefreshed { results: Vec<WorkspaceGitStatus> },

@@ -295,7 +295,7 @@ mod tests {
         }
 
         let path =
-            std::env::temp_dir().join(format!("herdr-notify-send-args-{}", std::process::id()));
+            std::env::temp_dir().join(format!("ups-notify-send-args-{}", std::process::id()));
         let script = "printf '%s\\n' \"$@\" > \"$HERDR_NOTIFY_ARGS\"";
         let shown = show_desktop_notification_with_command("-danger", Some("body"), |_| {
             let mut cmd = Command::new("sh");

@@ -96,7 +96,7 @@ impl App {
             if let Some(version) = update_ready_version {
                 let _ = notify(
                     &format!("v{version} available"),
-                    Some("detach, then run `herdr update`"),
+                    Some("detach, then run `ups update`"),
                 );
             } else {
                 for update in &pane_updates {

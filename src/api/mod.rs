@@ -19,7 +19,7 @@ use crate::api::schema::{
     SubscriptionEventKind, SuccessResponse,
 };
 
-pub const SOCKET_PATH_ENV_VAR: &str = "HERDR_SOCKET_PATH";
+pub const SOCKET_PATH_ENV_VAR: &str = "UPS_SOCKET_PATH";
 
 const SOCKET_PERMISSION_MODE: u32 = 0o600;
 const CONNECTION_POLL_INTERVAL: Duration = Duration::from_millis(100);
@@ -234,7 +234,7 @@ pub fn start_server(
 fn prepare_socket_path(path: &Path) -> std::io::Result<()> {
     crate::ipc::prepare_socket_path(path, |path| {
         format!(
-            "herdr is already running (socket busy at {})",
+            "ups is already running (socket busy at {})",
             path.display()
         )
     })
@@ -1114,7 +1114,7 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        std::env::temp_dir().join(format!("herdr-{name}-{}-{nanos}", std::process::id()))
+        std::env::temp_dir().join(format!("ups-{name}-{}-{nanos}", std::process::id()))
     }
 
     fn read_line(stream: &mut UnixStream) -> String {
@@ -1127,7 +1127,7 @@ mod tests {
     #[test]
     fn socket_path_prefers_explicit_env_override() {
         let _guard = env_lock().lock().unwrap();
-        let unique = format!("/tmp/herdr-test-{}.sock", std::process::id());
+        let unique = format!("/tmp/ups-test-{}.sock", std::process::id());
         std::env::remove_var(crate::session::SESSION_ENV_VAR);
         crate::session::clear_explicit_session_for_test();
         std::env::set_var(SOCKET_PATH_ENV_VAR, &unique);
@@ -1148,7 +1148,7 @@ mod tests {
 
         let expected = config_home
             .join(crate::config::app_dir_name())
-            .join("herdr.sock");
+            .join("ups.sock");
         assert_eq!(socket_path(), expected);
 
         std::env::remove_var("XDG_CONFIG_HOME");
@@ -1168,7 +1168,7 @@ mod tests {
             .join(crate::config::app_dir_name())
             .join("sessions")
             .join("work")
-            .join("herdr.sock");
+            .join("ups.sock");
         assert_eq!(socket_path(), expected);
 
         std::env::remove_var(crate::session::SESSION_ENV_VAR);

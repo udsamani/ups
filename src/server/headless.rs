@@ -1,9 +1,9 @@
-//! Headless server mode — runs the herdr event loop without a real terminal.
+//! Headless server mode — runs the ups event loop without a real terminal.
 //!
 //! The server:
 //! - Does not enter raw mode or read stdin
-//! - Creates and listens on both `herdr.sock` (existing JSON API) and
-//!   `herdr-client.sock` (new binary protocol)
+//! - Creates and listens on both `ups.sock` (existing JSON API) and
+//!   `ups-client.sock` (new binary protocol)
 //! - Initializes AppState and all PTYs from session restore or fresh state
 //! - Runs the main event loop (drain events, drain API requests, scheduled tasks)
 //! - Renders to a virtual ratatui Buffer in memory
@@ -65,10 +65,10 @@ const MIN_ROWS: u16 = 24;
 
 /// Legacy environment variable for overriding the client socket path.
 ///
-/// Contractual override behavior for auto-detect uses `HERDR_SOCKET_PATH`.
+/// Contractual override behavior for auto-detect uses `UPS_SOCKET_PATH`.
 /// This variable is kept as a fallback for callers that explicitly need a
-/// client-only override when `HERDR_SOCKET_PATH` is not set.
-pub const CLIENT_SOCKET_PATH_ENV_VAR: &str = "HERDR_CLIENT_SOCKET_PATH";
+/// client-only override when `UPS_SOCKET_PATH` is not set.
+pub const CLIENT_SOCKET_PATH_ENV_VAR: &str = "UPS_CLIENT_SOCKET_PATH";
 
 /// Socket permission mode (owner read/write only).
 const SOCKET_PERMISSION_MODE: u32 = 0o600;
@@ -94,7 +94,7 @@ fn toast_notify_kind(delivery: config::ToastDelivery) -> Option<protocol::Notify
     match delivery {
         config::ToastDelivery::Terminal => Some(protocol::NotifyKind::Toast),
         config::ToastDelivery::System => Some(protocol::NotifyKind::SystemToast),
-        config::ToastDelivery::Off | config::ToastDelivery::Herdr => None,
+        config::ToastDelivery::Off | config::ToastDelivery::Ups => None,
     }
 }
 
@@ -145,10 +145,10 @@ fn toast_message_from_state_change(
 ///
 /// Contract-aligned override behavior:
 /// 1. If CLI `--session <name>` is active, use that session's client socket.
-/// 2. If `HERDR_SOCKET_PATH` is set, derive the client socket path from it by
-///    inserting `-client` before `.sock` (e.g. `herdr.sock` -> `herdr-client.sock`).
+/// 2. If `UPS_SOCKET_PATH` is set, derive the client socket path from it by
+///    inserting `-client` before `.sock` (e.g. `ups.sock` -> `ups-client.sock`).
 ///    This keeps JSON API and client socket overrides consistent.
-/// 3. Otherwise, honor `HERDR_CLIENT_SOCKET_PATH` (legacy/testing fallback).
+/// 3. Otherwise, honor `UPS_CLIENT_SOCKET_PATH` (legacy/testing fallback).
 /// 4. Otherwise, use the active session data directory.
 pub fn client_socket_path() -> PathBuf {
     if crate::session::explicit_session_requested() {
@@ -179,7 +179,7 @@ fn derive_client_socket_from_api_socket(api_socket_path: &Path) -> PathBuf {
     let stem = api_socket_path
         .file_stem()
         .and_then(|s| s.to_str())
-        .unwrap_or("herdr");
+        .unwrap_or("ups");
     let parent = api_socket_path.parent().unwrap_or_else(|| Path::new(""));
 
     if api_socket_path
@@ -256,7 +256,7 @@ impl ClientConnection {
 fn prepare_socket_path(path: &Path) -> io::Result<()> {
     crate::ipc::prepare_socket_path(path, |path| {
         format!(
-            "herdr server is already running (socket busy at {})",
+            "ups server is already running (socket busy at {})",
             path.display()
         )
     })
@@ -271,7 +271,7 @@ fn restrict_socket_permissions(path: &Path) -> io::Result<()> {
 // Headless server
 // ---------------------------------------------------------------------------
 
-/// The headless server — runs the herdr event loop without a real terminal.
+/// The headless server — runs the ups event loop without a real terminal.
 pub struct HeadlessServer {
     app: app::App,
     client_listener: UnixListener,
@@ -963,7 +963,7 @@ impl HeadlessServer {
                                 .map(|toast| format!("{}: {}", toast.title, toast.context))
                         } else {
                             Some(format!(
-                                "v{version} available: detach, then run `herdr update`"
+                                "v{version} available: detach, then run `ups update`"
                             ))
                         }
                     } else {
@@ -1334,7 +1334,7 @@ impl HeadlessServer {
         let _ = msg.respond_to.send(response);
 
         // Forward new toast state only when a client-local delivery mode is selected.
-        // Herdr delivery renders the toast in-frame and must not ask clients to
+        // Ups delivery renders the toast in-frame and must not ask clients to
         // show a terminal or system notification.
         let toast_after = self.app.state.toast.clone();
         let forwarded_toast_from_state =
@@ -1851,7 +1851,7 @@ pub fn run_server() -> io::Result<()> {
     let _api_server = match api::start_server(api_tx, event_hub.clone()) {
         Ok(server) => server,
         Err(err) if err.kind() == io::ErrorKind::AddrInUse => {
-            eprintln!("error: herdr server is already running");
+            eprintln!("error: ups server is already running");
             eprintln!("api socket: {}", api::socket_path().display());
             std::process::exit(1);
         }
@@ -1886,7 +1886,7 @@ pub fn run_server() -> io::Result<()> {
         let mut server = match HeadlessServer::new(app) {
             Ok(server) => server,
             Err(err) if err.kind() == io::ErrorKind::AddrInUse => {
-                eprintln!("error: herdr server is already running");
+                eprintln!("error: ups server is already running");
                 eprintln!("client socket: {}", client_socket_path().display());
                 std::process::exit(1);
             }
@@ -1896,7 +1896,7 @@ pub fn run_server() -> io::Result<()> {
         info!(
             api_socket = %api::socket_path().display(),
             client_socket = %client_socket_path().display(),
-            "herdr server started"
+            "ups server started"
         );
 
         server.run().await
@@ -1909,7 +1909,7 @@ pub fn run_server() -> io::Result<()> {
 
 /// Initialize logging for the server process.
 fn init_logging() {
-    crate::logging::init_file_logging("herdr-server.log");
+    crate::logging::init_file_logging("ups-server.log");
 }
 
 // ---------------------------------------------------------------------------
@@ -1994,23 +1994,23 @@ mod tests {
 
     #[test]
     fn client_socket_path_derived_from_api_socket_override() {
-        let path = client_socket_path_from_overrides(Some("/tmp/test-herdr.sock"), None);
-        assert_eq!(path, PathBuf::from("/tmp/test-herdr-client.sock"));
+        let path = client_socket_path_from_overrides(Some("/tmp/test-ups.sock"), None);
+        assert_eq!(path, PathBuf::from("/tmp/test-ups-client.sock"));
     }
 
     #[test]
     fn client_socket_path_api_override_takes_precedence_over_legacy_client_override() {
         let path = client_socket_path_from_overrides(
-            Some("/tmp/test-herdr.sock"),
+            Some("/tmp/test-ups.sock"),
             Some("/tmp/legacy-client.sock"),
         );
-        assert_eq!(path, PathBuf::from("/tmp/test-herdr-client.sock"));
+        assert_eq!(path, PathBuf::from("/tmp/test-ups-client.sock"));
     }
 
     #[test]
     fn client_socket_path_respects_legacy_client_override_without_api_override() {
-        let path = client_socket_path_from_overrides(None, Some("/tmp/test-herdr-client.sock"));
-        assert_eq!(path, PathBuf::from("/tmp/test-herdr-client.sock"));
+        let path = client_socket_path_from_overrides(None, Some("/tmp/test-ups-client.sock"));
+        assert_eq!(path, PathBuf::from("/tmp/test-ups-client.sock"));
     }
 
     #[test]
@@ -2018,7 +2018,7 @@ mod tests {
         std::env::remove_var(crate::session::SESSION_ENV_VAR);
         crate::session::clear_explicit_session_for_test();
         let path = client_socket_path_from_overrides(None, None);
-        assert_eq!(path, config::config_dir().join("herdr-client.sock"));
+        assert_eq!(path, config::config_dir().join("ups-client.sock"));
     }
 
     #[test]
@@ -2896,7 +2896,7 @@ mod tests {
     }
 
     #[test]
-    fn herdr_toast_delivery_keeps_toast_in_frame_without_client_notify() {
+    fn ups_toast_delivery_keeps_toast_in_frame_without_client_notify() {
         let mut server = test_headless_server();
         let (client_tx, client_control_rx, _client_rx) = test_client_writer();
 
@@ -2913,7 +2913,7 @@ mod tests {
             ),
         );
         server.foreground_client_id = Some(1);
-        server.app.state.toast_config.delivery = crate::config::ToastDelivery::Herdr;
+        server.app.state.toast_config.delivery = crate::config::ToastDelivery::Ups;
 
         let changed = server.handle_internal_event_with_forwarding(AppEvent::UpdateReady {
             version: "9.9.9".to_string(),
@@ -2925,7 +2925,7 @@ mod tests {
             client_control_rx
                 .recv_timeout(Duration::from_millis(50))
                 .is_err(),
-            "herdr delivery should render in-frame instead of forwarding a client-local notification"
+            "ups delivery should render in-frame instead of forwarding a client-local notification"
         );
     }
 
@@ -2961,7 +2961,7 @@ mod tests {
         ) {
             ServerMessage::Notify { kind, message } => {
                 assert_eq!(kind, protocol::NotifyKind::SystemToast);
-                assert_eq!(message, "v9.9.9 available: detach, then run `herdr update`");
+                assert_eq!(message, "v9.9.9 available: detach, then run `ups update`");
             }
             other => panic!("expected system toast notify, got {other:?}"),
         }
@@ -2978,7 +2978,7 @@ mod tests {
             .get_mut(&pane_id)
             .unwrap()
             .set_hook_authority(
-                "herdr:pi".into(),
+                "ups:pi".into(),
                 "pi".into(),
                 crate::detect::AgentState::Working,
                 None,
@@ -3012,7 +3012,7 @@ mod tests {
                 id: "stale".into(),
                 method: api::schema::Method::PaneReportAgent(api::schema::PaneReportAgentParams {
                     pane_id: public_pane_id,
-                    source: "herdr:pi".into(),
+                    source: "ups:pi".into(),
                     agent: "pi".into(),
                     state: api::schema::PaneAgentState::Idle,
                     message: None,

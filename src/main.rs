@@ -7,14 +7,14 @@ use crossterm::event::{
 };
 use crossterm::execute;
 
-pub(crate) const HERDR_ENV_VAR: &str = "HERDR_ENV";
-pub(crate) const HERDR_ENV_VALUE: &str = "1";
+pub(crate) const UPS_ENV_VAR: &str = "UPS_ENV";
+pub(crate) const UPS_ENV_VALUE: &str = "1";
 const NESTED_HERDR_MESSAGES: [&str; 6] = [
     "inception detected. we need to go deeper... said no one ever.",
     "recursion is a pathway to many abilities some consider to be... unnatural.",
     "you were so preoccupied with whether you could, you didn't stop to think if you should. — dr. malcolm",
-    "recursive herdring is disabled. somewhere, a call stack breathes a sigh of relief.",
-    "recursive descent denied. there is, in fact, such a thing as too much herdr.",
+    "recursive upsing is disabled. somewhere, a call stack breathes a sigh of relief.",
+    "recursive descent denied. there is, in fact, such a thing as too much ups.",
     "recursion detected. base case not found. aborting.",
 ];
 
@@ -49,11 +49,11 @@ mod update;
 mod workspace;
 
 fn init_logging() {
-    crate::logging::init_file_logging("herdr.log");
+    crate::logging::init_file_logging("ups.log");
 }
 
-const DEFAULT_CONFIG: &str = r##"# herdr configuration
-# Place this file at ~/.config/herdr/config.toml
+const DEFAULT_CONFIG: &str = r##"# ups configuration
+# Place this file at ~/.config/ups/config.toml
 
 # Show first-run notification setup on startup.
 # Missing also shows onboarding; set false after you've chosen.
@@ -120,7 +120,7 @@ const DEFAULT_CONFIG: &str = r##"# herdr configuration
 # Sidebar width (auto-scaled based on workspace names, this sets the default)
 # sidebar_width = 26
 
-# Capture mouse input for Herdr's mouse UI.
+# Capture mouse input for Ups's mouse UI.
 # Set false to let the terminal handle normal clicks, such as Cmd-clicking URLs.
 # Pane apps like lazygit and btop can still receive mouse when they request it.
 # mouse_capture = true
@@ -141,7 +141,7 @@ const DEFAULT_CONFIG: &str = r##"# herdr configuration
 # Background notification popup delivery
 [ui.toast]
 # off = disable pop-up notifications
-# herdr = show top-right in-app toasts
+# ups = show top-right in-app toasts
 # terminal = ask the outer terminal to show a desktop notification
 # system = ask the OS notification service directly
 # delivery = "off"
@@ -160,7 +160,7 @@ const DEFAULT_CONFIG: &str = r##"# herdr configuration
 # droid = "off"
 
 [experimental]
-# Allow launching herdr from inside a herdr-managed pane.
+# Allow launching ups from inside a ups-managed pane.
 # allow_nested = false
 # Experimental local Kitty graphics rendering for attached clients.
 # Requires a Kitty graphics-compatible outer terminal.
@@ -173,11 +173,11 @@ const DEFAULT_CONFIG: &str = r##"# herdr configuration
 "##;
 
 fn should_block_nested(config: &config::Config) -> bool {
-    should_block_nested_for_env(config, std::env::var(HERDR_ENV_VAR).ok().as_deref())
+    should_block_nested_for_env(config, std::env::var(UPS_ENV_VAR).ok().as_deref())
 }
 
-fn should_block_nested_for_env(config: &config::Config, herdr_env: Option<&str>) -> bool {
-    !config.experimental.allow_nested && herdr_env == Some(HERDR_ENV_VALUE)
+fn should_block_nested_for_env(config: &config::Config, ups_env: Option<&str>) -> bool {
+    !config.experimental.allow_nested && ups_env == Some(UPS_ENV_VALUE)
 }
 
 fn random_nested_message() -> &'static str {
@@ -197,7 +197,7 @@ fn main() -> io::Result<()> {
         Ok(args) => args,
         Err(err) => {
             eprintln!("error: {err}");
-            eprintln!("run 'herdr --help' for usage");
+            eprintln!("run 'ups --help' for usage");
             std::process::exit(2);
         }
     };
@@ -205,7 +205,7 @@ fn main() -> io::Result<()> {
         Ok(parsed) => parsed,
         Err(err) => {
             eprintln!("error: {err}");
-            eprintln!("run 'herdr --help' for usage");
+            eprintln!("run 'ups --help' for usage");
             std::process::exit(2);
         }
     };
@@ -220,7 +220,7 @@ fn main() -> io::Result<()> {
         })
     {
         eprintln!("error: --remote can only be used with the default launch command");
-        eprintln!("run 'herdr --help' for usage");
+        eprintln!("run 'ups --help' for usage");
         std::process::exit(2);
     }
 
@@ -253,57 +253,57 @@ fn main() -> io::Result<()> {
     }
 
     if args.iter().any(|a| a == "--help" || a == "-h") {
-        println!("herdr — terminal workspace manager for AI coding agents");
+        println!("ups — terminal workspace manager for AI coding agents");
         println!();
-        println!("Usage: herdr [options]");
-        println!("       herdr --session <name> [options]");
-        println!("       herdr --remote <ssh-target> [--session <name>]");
-        println!("       herdr session attach <name>");
-        println!("       herdr update");
-        println!("       herdr server stop");
-        println!("       herdr server reload-config");
-        println!("       herdr workspace <subcommand> ...");
-        println!("       herdr tab <subcommand> ...");
-        println!("       herdr pane <subcommand> ...");
-        println!("       herdr wait <subcommand> ...");
-        println!("       herdr session <subcommand> ...");
-        println!("       herdr integration <subcommand> ...");
+        println!("Usage: ups [options]");
+        println!("       ups --session <name> [options]");
+        println!("       ups --remote <ssh-target> [--session <name>]");
+        println!("       ups session attach <name>");
+        println!("       ups update");
+        println!("       ups server stop");
+        println!("       ups server reload-config");
+        println!("       ups workspace <subcommand> ...");
+        println!("       ups tab <subcommand> ...");
+        println!("       ups pane <subcommand> ...");
+        println!("       ups wait <subcommand> ...");
+        println!("       ups session <subcommand> ...");
+        println!("       ups integration <subcommand> ...");
         println!();
         println!("Common commands:");
         for (command, description) in [
-            ("herdr", "Launch or attach to the persistent session"),
+            ("ups", "Launch or attach to the persistent session"),
             (
-                "herdr status [server|client]",
+                "ups status [server|client]",
                 "Show local client and running server status",
             ),
-            ("herdr update", "Download and install the latest version"),
+            ("ups update", "Download and install the latest version"),
             (
-                "herdr server stop",
+                "ups server stop",
                 "Stop the running server via the API socket",
             ),
             (
-                "herdr server reload-config",
+                "ups server reload-config",
                 "Reload config.toml in the running server",
             ),
             (
-                "herdr workspace <subcommand>",
+                "ups workspace <subcommand>",
                 "Workspace helpers over the socket API",
             ),
-            ("herdr tab <subcommand>", "Tab helpers over the socket API"),
+            ("ups tab <subcommand>", "Tab helpers over the socket API"),
             (
-                "herdr pane <subcommand>",
+                "ups pane <subcommand>",
                 "Pane control helpers over the socket API",
             ),
             (
-                "herdr wait <subcommand>",
+                "ups wait <subcommand>",
                 "Blocking wait helpers over the socket API",
             ),
             (
-                "herdr session <subcommand>",
+                "ups session <subcommand>",
                 "Manage named persistent sessions",
             ),
             (
-                "herdr integration <subcommand>",
+                "ups integration <subcommand>",
                 "Manage built-in agent integrations",
             ),
         ] {
@@ -312,9 +312,9 @@ fn main() -> io::Result<()> {
         println!();
         println!("Advanced commands:");
         for (command, description) in [
-            ("herdr server", "Run as headless server"),
+            ("ups server", "Run as headless server"),
             (
-                "herdr client",
+                "ups client",
                 "Connect to a running server as a thin client",
             ),
         ] {
@@ -324,20 +324,20 @@ fn main() -> io::Result<()> {
         println!("Options:");
         println!("  --no-session        Run monolithically (no server/client, escape hatch)");
         println!("  --session <name>    Use or create a named persistent session");
-        println!("  --remote <target>   Attach through SSH to a remote Herdr server");
+        println!("  --remote <target>   Attach through SSH to a remote Ups server");
         println!("  --default-config    Print default configuration and exit");
         println!("  --version, -V       Print version and exit");
         println!("  --help, -h          Show this help");
         println!();
         println!("Config: {}", config::config_path().display());
         println!("Logs:   {}", logging::help_log_paths_summary());
-        println!("Env:    HERDR_CONFIG_PATH overrides config file path");
-        println!("Home:   https://herdr.dev");
+        println!("Env:    UPS_CONFIG_PATH overrides config file path");
+        println!("Home:   https://ups.dev");
         return Ok(());
     }
 
     if args.iter().any(|a| a == "--version" || a == "-V") {
-        println!("herdr {}", env!("CARGO_PKG_VERSION"));
+        println!("ups {}", env!("CARGO_PKG_VERSION"));
         return Ok(());
     }
 
@@ -360,7 +360,7 @@ fn main() -> io::Result<()> {
     for arg in &args[1..] {
         if arg.starts_with('-') && !known_flags.contains(&arg.as_str()) {
             eprintln!("unknown option: {arg}");
-            eprintln!("run 'herdr --help' for usage");
+            eprintln!("run 'ups --help' for usage");
             std::process::exit(1);
         }
         if !arg.starts_with('-')
@@ -379,7 +379,7 @@ fn main() -> io::Result<()> {
             .contains(&arg.as_str())
         {
             eprintln!("unknown command: {arg}");
-            eprintln!("run 'herdr --help' for usage");
+            eprintln!("run 'ups --help' for usage");
             std::process::exit(1);
         }
     }
@@ -390,7 +390,7 @@ fn main() -> io::Result<()> {
 
     let loaded_config = config::Config::load();
     if should_block_nested(&loaded_config.config) {
-        eprintln!("\x1b[1merror:\x1b[0m nested herdr is disabled by default.");
+        eprintln!("\x1b[1merror:\x1b[0m nested ups is disabled by default.");
         eprintln!("see configuration if you want to enable it.");
         eprintln!();
         eprintln!("\x1b[2m\"{}\"\x1b[0m", random_nested_message());
@@ -403,7 +403,7 @@ fn main() -> io::Result<()> {
     // Check if a server is running, spawn one if needed, then attach as client.
     if !no_session {
         if let Err(err) = server::autodetect::auto_detect_launch() {
-            eprintln!("herdr: {err}");
+            eprintln!("ups: {err}");
             std::process::exit(1);
         }
         return Ok(());
@@ -419,7 +419,7 @@ fn main() -> io::Result<()> {
     let _api_server = match api::start_server(api_tx, event_hub.clone()) {
         Ok(server) => server,
         Err(err) if err.kind() == io::ErrorKind::AddrInUse => {
-            eprintln!("error: herdr is already running");
+            eprintln!("error: ups is already running");
             eprintln!("socket: {}", api::socket_path().display());
             std::process::exit(1);
         }
@@ -534,20 +534,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn nested_herdr_blocks_when_env_is_set() {
+    fn nested_ups_blocks_when_env_is_set() {
         let config = config::Config::default();
-        assert!(should_block_nested_for_env(&config, Some(HERDR_ENV_VALUE)));
+        assert!(should_block_nested_for_env(&config, Some(UPS_ENV_VALUE)));
     }
 
     #[test]
-    fn nested_herdr_does_not_block_when_allowed() {
+    fn nested_ups_does_not_block_when_allowed() {
         let config: config::Config =
             toml::from_str("[experimental]\nallow_nested = true\n").unwrap();
-        assert!(!should_block_nested_for_env(&config, Some(HERDR_ENV_VALUE)));
+        assert!(!should_block_nested_for_env(&config, Some(UPS_ENV_VALUE)));
     }
 
     #[test]
-    fn nested_herdr_does_not_block_without_env() {
+    fn nested_ups_does_not_block_without_env() {
         let config = config::Config::default();
         assert!(!should_block_nested_for_env(&config, None));
     }
@@ -559,9 +559,9 @@ mod tests {
     }
 
     #[test]
-    fn nested_message_strings_no_longer_repeat_herdr_prefix() {
+    fn nested_message_strings_no_longer_repeat_ups_prefix() {
         assert!(NESTED_HERDR_MESSAGES
             .iter()
-            .all(|message| !message.starts_with("herdr:")));
+            .all(|message| !message.starts_with("ups:")));
     }
 }
